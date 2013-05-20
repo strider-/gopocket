@@ -3,16 +3,16 @@ gopocket
 
 Go package for consuming the PocketAPI (http://getpocket.com).  Requires a valid consumer key & access token from Pocket.
 
-Working
+Working (w/ rate information)
 _______
-* Add (w/ rate information)
+* Add
+* Modify
 
 In Progress
 _______
-* Modify
 * Retrieve
 
-Usage
+Add Usage
 -------
      pocket := gopocket.Init(key, token)
      url := "http://an-interesting-article"
@@ -20,3 +20,13 @@ Usage
      tags = []string{"An", "Array", "Of", "Tags"}
 
      response, rate, err := pocket.Add(url, title, tags)
+
+Modify Usage
+-------
+     pocket := gopocket.Init(key, token)
+     batch := gopocket.NewBatch()
+
+     batch.Add("http://another-good-article", "", []string{"Article", "Google", "TV"})
+     batch.Add("http://this-one-kinda-sucks", "", []string{"Terrible", "Bad Writing"})
+
+     response, rate, err := pocket.Modify(batch)
