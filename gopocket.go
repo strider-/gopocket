@@ -23,6 +23,10 @@ func Init(consumerKey, accessToken string) *Pocket {
 	return &Pocket{key: consumerKey, token: accessToken}
 }
 
+func NewBatch() *Batch {
+	return &Batch{}
+}
+
 func (p *Pocket) Add(url, title string, tags []string) (*AddResponse, *ApiRate, error) {
 	data := struct {
 		ConsumerKey string   `json:"consumer_key"`
@@ -36,6 +40,20 @@ func (p *Pocket) Add(url, title string, tags []string) (*AddResponse, *ApiRate, 
 
 	var resp *AddResponse
 	rate, err := p.post(pocketAddUrl, &data, &resp)
+	return resp, rate, err
+}
+
+func (p *Pocket) Modify(batch *Batch) (*ModifyResponse, *ApiRate, error) {
+	data := struct {
+		ConsumerKey string        `json:"consumer_key"`
+		AccessToken string        `json:"access_token"`
+		Actions     []interface{} `json:"actions"`
+	}{
+		p.key, p.token, batch.actions,
+	}
+
+	var resp *ModifyResponse
+	rate, err := p.post(pocketModifyUrl, &data, &resp)
 	return resp, rate, err
 }
 
