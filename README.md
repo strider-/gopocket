@@ -11,3 +11,12 @@ In Progress
 _______
 * Modify
 * Retrieve
+
+Usage
+-------
+     pocket := gopocket.Init(key, token)
+     url := "http://an-interesting=article"
+     title := ""
+     tags = []string{"An", "Array", "Of", "Tags"}
+
+     response, rate, err := pocket.Add(url, title, tags)
