@@ -27,8 +27,8 @@ type ModifyResponse struct {
 }
 
 type RetrieveResponse struct {
-	List   []responseItem `json:"list"`
-	Status int            `json:"status"`
+	List   retrieveMap `json:"list"`
+	Status int         `json:"status"`
 }
 
 type responseItem struct {
