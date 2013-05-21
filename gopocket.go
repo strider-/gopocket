@@ -3,6 +3,7 @@ package gopocket
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -26,6 +27,10 @@ func Init(consumerKey, accessToken string) *Pocket {
 
 func NewBatch() *Batch {
 	return &Batch{}
+}
+
+func NewOptions() *Options {
+	return &Options{dict: make(map[string]interface{})}
 }
 
 func (p *Pocket) Add(url, title string, tags []string) (*AddResponse, *ApiRate, error) {
@@ -58,6 +63,19 @@ func (p *Pocket) Modify(batch *Batch) (*ModifyResponse, *ApiRate, error) {
 	return resp, rate, err
 }
 
+func (p *Pocket) Retrieve(opts *Options) (*RetrieveResponse, *ApiRate, error) {
+	opts.dict["consumer_key"] = p.key
+	opts.dict["access_token"] = p.token
+	defer func() {
+		delete(opts.dict, "consumer_key")
+		delete(opts.dict, "access_token")
+	}()
+
+	var resp *RetrieveResponse
+	rate, err := p.post(pocketRetrieveUrl, &opts.dict, &resp)
+	return resp, rate, err
+}
+
 func (p *Pocket) post(url string, requestModel interface{}, result interface{}) (rate *ApiRate, err error) {
 	// marshal the request struct to a json object within an io.Reader
 	body, err := marshalRequest(requestModel)
@@ -77,16 +95,22 @@ func (p *Pocket) post(url string, requestModel interface{}, result interface{}) 
 	if err != nil {
 		return
 	}
-
-	// read & unmarshal the response into the expected result, along with the current api rate limits
 	defer resp.Body.Close()
+
+	// grab the error information along with the current api rate limits.
 	rate = apiRateFromResponse(resp)
+	if rate.Error != "" {
+		err = errors.New(rate.Error)
+		return
+	}
+
+	// read & unmarshal the response into the expected result
 	contents, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return
 	}
-
 	err = json.Unmarshal(contents, &result)
+
 	return
 }
 
@@ -109,6 +133,7 @@ func createRequest(url string, body io.Reader) (req *http.Request, err error) {
 }
 
 func apiRateFromResponse(response *http.Response) (rate *ApiRate) {
+	rate = new(ApiRate)
 	t := reflect.ValueOf(rate).Elem()
 
 	for i := 0; i < t.NumField(); i++ {
@@ -117,13 +142,16 @@ func apiRateFromResponse(response *http.Response) (rate *ApiRate) {
 		tag := field.Tag.Get("header")
 		header := response.Header.Get(tag)
 
-		switch field.Type.Name() {
-		case "int":
-			num, _ := strconv.ParseInt(header, 10, 32)
-			value.SetInt(num)
-		case "string":
-			value.SetString(header)
+		if header != "" {
+			switch field.Type.Name() {
+			case "int":
+				num, _ := strconv.ParseInt(header, 10, 32)
+				value.SetInt(num)
+			case "string":
+				value.SetString(header)
+			}
 		}
 	}
+
 	return
 }
