@@ -17,7 +17,7 @@ Add Usage
      pocket := gopocket.Init(key, token)
      url := "http://an-interesting-article"
      title := "Won't be used if correctly parsed by Pocket, so it's just a backup."
-     tags = []string{"An", "Array", "Of", "Tags"}
+     tags := []string{"An", "Array", "Of", "Tags"}
 
      response, rate, err := pocket.Add(url, title, tags)
 

@@ -10,10 +10,10 @@ type ApiRate struct {
 	ErrorCode     int    `header:"X-Error-Code"`
 	UserLimit     int    `header:"X-Limit-User-Limit"`
 	UserRemaining int    `header:"X-Limit-User-Remaining"`
-	UserReset     int64  `header:"X-Limit-User-Reset"`
+	UserReset     int    `header:"X-Limit-User-Reset"`
 	KeyLimit      int    `header:"X-Limit-Key-Limit"`
 	KeyRemaining  int    `header:"X-Limit-Key-Remaining"`
-	KeyReset      int64  `header:"X-Limit-Key-Reset"`
+	KeyReset      int    `header:"X-Limit-Key-Reset"`
 }
 
 type AddResponse struct {
@@ -24,6 +24,11 @@ type AddResponse struct {
 type ModifyResponse struct {
 	Results []responseItem `json:"action_results"`
 	Status  int            `json:"status"`
+}
+
+type RetrieveResponse struct {
+	List   []responseItem `json:"list"`
+	Status int            `json:"status"`
 }
 
 type responseItem struct {
@@ -51,9 +56,20 @@ type responseItem struct {
 	IsIndex           int       `json:"is_index,string"`
 	IsArticle         int       `json:"is_article,string"`
 	UsedFallback      int       `json:"used_fallback,string"`
+	Favorite          int       `json:"favorite,string"`
+	Status            int       `json:"status,string"`
 	Authors           authorMap `json:"authors"`
 	Images            imageMap  `json:"images"`
 	Videos            videoMap  `json:"videos"`
+}
+
+type retrieveMap map[string]responseItem
+
+func (r *retrieveMap) UnmarshalJSON(b []byte) error {
+	if bytes.Compare([]byte("[]"), b) == 0 {
+		return nil
+	}
+	return json.Unmarshal(b, (*map[string]responseItem)(r))
 }
 
 type Author struct {

@@ -11,8 +11,9 @@ import (
 )
 
 const (
-	pocketAddUrl    = "https://getpocket.com/v3/add"
-	pocketModifyUrl = "https://getpocket.com/v3/send"
+	pocketAddUrl      = "https://getpocket.com/v3/add"
+	pocketModifyUrl   = "https://getpocket.com/v3/send"
+	pocketRetrieveUrl = "https://getpocket.com/v3/get"
 )
 
 type Pocket struct {
@@ -107,8 +108,7 @@ func createRequest(url string, body io.Reader) (req *http.Request, err error) {
 	return
 }
 
-func apiRateFromResponse(response *http.Response) *ApiRate {
-	var rate = &ApiRate{}
+func apiRateFromResponse(response *http.Response) (rate *ApiRate) {
 	t := reflect.ValueOf(rate).Elem()
 
 	for i := 0; i < t.NumField(); i++ {
@@ -123,10 +123,7 @@ func apiRateFromResponse(response *http.Response) *ApiRate {
 			value.SetInt(num)
 		case "string":
 			value.SetString(header)
-		case "int64":
-			num, _ := strconv.ParseInt(header, 10, 64)
-			value.SetInt(num)
 		}
 	}
-	return rate
+	return
 }

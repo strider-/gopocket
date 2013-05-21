@@ -23,6 +23,14 @@ func (b *Batch) push(op interface{}) {
 	b.actions = append(b.actions, op)
 }
 
+func (b *Batch) Count() int {
+	return len(b.actions)
+}
+
+func (b *Batch) Clear() {
+	b.actions = nil
+}
+
 func (b *Batch) Add(url, title string, tags []string) {
 	b.push(struct {
 		Action string   `json:"action"`
