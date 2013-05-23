@@ -3,6 +3,8 @@ gopocket
 
 Go package for consuming the PocketAPI (http://getpocket.com).  Requires a valid consumer key & access token from Pocket.
 
+Documentation available at [godoc](http://godoc.org/github.com/strider-/gopocket)
+
 Add Usage
 -------
      pocket := gopocket.Init(key, token)
