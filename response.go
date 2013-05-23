@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 )
 
+// ApiRate contains rate information from the API
 type ApiRate struct {
 	Error         string `header:"X-Error"`
 	ErrorCode     int    `header:"X-Error-Code"`
@@ -16,16 +17,19 @@ type ApiRate struct {
 	KeyReset      int    `header:"X-Limit-Key-Reset"`
 }
 
+// AddResponse is the result type when calling Pocket.Add
 type AddResponse struct {
 	Item   responseItem `json:"item"`
 	Status int          `json:"status"`
 }
 
+// ModifyResponse is the result type when calling Pocket.Modify
 type ModifyResponse struct {
 	Results []responseItem `json:"action_results"`
 	Status  int            `json:"status"`
 }
 
+// RetrieveResponse is the result type when calling Pocket.Retrieve
 type RetrieveResponse struct {
 	List   retrieveMap `json:"list"`
 	Status int         `json:"status"`
@@ -72,6 +76,7 @@ func (r *retrieveMap) UnmarshalJSON(b []byte) error {
 	return json.Unmarshal(b, (*map[string]responseItem)(r))
 }
 
+// Author contains author information for an item
 type Author struct {
 	AuthorID int    `json:"author_id,string"`
 	Name     string `json:"name"`
@@ -87,6 +92,7 @@ func (a *authorMap) UnmarshalJSON(b []byte) error {
 	return json.Unmarshal(b, (*map[string]Author)(a))
 }
 
+// Image contains image information for an item
 type Image struct {
 	ItemId  int    `json:"item_id,string"`
 	ImageId int    `json:"image_id,string"`
@@ -106,6 +112,7 @@ func (i *imageMap) UnmarshalJSON(b []byte) error {
 	return json.Unmarshal(b, (*map[string]Image)(i))
 }
 
+// Video contains video information for an item
 type Video struct {
 	ItemId  int    `json:"item_id,string"`
 	VideoId int    `json:"video_id,string"`

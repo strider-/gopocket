@@ -1,3 +1,4 @@
+// Gopocket provides a Go wrapper around the getpocket API (http://www.getpocket.com)
 package gopocket
 
 import (
@@ -17,22 +18,29 @@ const (
 	pocketRetrieveUrl = "https://getpocket.com/v3/get"
 )
 
+// Pocket type performs all API calls, created by Init function.
 type Pocket struct {
 	key, token string
 }
 
+// Init creates a new Pocket type with the provided app consumer key and user access token.
 func Init(consumerKey, accessToken string) *Pocket {
 	return &Pocket{key: consumerKey, token: accessToken}
 }
 
+// NewBatch creates a new Batch type for requesting multiple operations in a single request.
 func NewBatch() *Batch {
 	return &Batch{}
 }
 
+// NewOptions creates a new Options type for retrieving user articles.
 func NewOptions() *Options {
 	return &Options{dict: make(map[string]interface{})}
 }
 
+// Add submits a url to a users pocket queue. Title will be used as a fallback if the API couldn't accurately parse the
+// title of the article, sending an empty string is acceptable. If you have multiple urls to add at once,
+// create a Batch & use the Modify method.
 func (p *Pocket) Add(url, title string, tags []string) (*AddResponse, *ApiRate, error) {
 	data := struct {
 		ConsumerKey string   `json:"consumer_key"`
@@ -49,6 +57,7 @@ func (p *Pocket) Add(url, title string, tags []string) (*AddResponse, *ApiRate, 
 	return resp, rate, err
 }
 
+// Modify submits an array of operations in a single request to the API. See the Batch methods for more details.
 func (p *Pocket) Modify(batch *Batch) (*ModifyResponse, *ApiRate, error) {
 	data := struct {
 		ConsumerKey string        `json:"consumer_key"`
@@ -63,6 +72,7 @@ func (p *Pocket) Modify(batch *Batch) (*ModifyResponse, *ApiRate, error) {
 	return resp, rate, err
 }
 
+// Retrieve submits a request to return a filtered array of articles. See the Options type for more details.
 func (p *Pocket) Retrieve(opts *Options) (*RetrieveResponse, *ApiRate, error) {
 	opts.dict["consumer_key"] = p.key
 	opts.dict["access_token"] = p.token
