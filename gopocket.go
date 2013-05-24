@@ -21,11 +21,12 @@ const (
 // Pocket type performs all API calls, created by Init function.
 type Pocket struct {
 	key, token string
+	post       func(url string, requestModel interface{}, result interface{}) (rate *ApiRate, err error)
 }
 
 // Init creates a new Pocket type with the provided app consumer key and user access token.
 func Init(consumerKey, accessToken string) *Pocket {
-	return &Pocket{key: consumerKey, token: accessToken}
+	return &Pocket{key: consumerKey, token: accessToken, post: post}
 }
 
 // NewBatch creates a new Batch type for requesting multiple operations in a single request.
@@ -86,7 +87,7 @@ func (p *Pocket) Retrieve(opts *Options) (*RetrieveResponse, *ApiRate, error) {
 	return resp, rate, err
 }
 
-func (p *Pocket) post(url string, requestModel interface{}, result interface{}) (rate *ApiRate, err error) {
+func post(url string, requestModel interface{}, result interface{}) (rate *ApiRate, err error) {
 	// marshal the request struct to a json object within an io.Reader
 	body, err := marshalRequest(requestModel)
 	if err != nil {
