@@ -11,13 +11,21 @@ func mockPost(url string, requestModel interface{}, result interface{}) (rate *A
 }
 
 func TestPocketAdd(t *testing.T) {
+	pocket := createTestPocket()
+	pocket.Add("", "", []string{})
 	// test stub
 }
 
 func TestPocketModify(t *testing.T) {
+	pocket := createTestPocket()
+	batch := NewBatch()
+	pocket.Modify(batch)
 	// test stub
 }
 
 func TestPocketRetrieve(t *testing.T) {
+	pocket := createTestPocket()
+	opts := NewOptions()
+	pocket.Retrieve(opts)
 	// test stub
 }
